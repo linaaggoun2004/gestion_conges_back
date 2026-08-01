@@ -16,7 +16,7 @@ import com.example.gestion_conges_back.service.Authsevice;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@CrossOrigin(origins = { "http://localhost:4200", "null", "http://localhost:9090" })
+@CrossOrigin(origins = { "http://localhost:5173", "null", "http://localhost:9090" })
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
