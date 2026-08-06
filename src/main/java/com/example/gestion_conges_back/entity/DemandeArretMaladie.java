@@ -29,4 +29,28 @@ public class DemandeArretMaladie extends Demande {
         this.metadonnees = metadonnees;
     }
 
+    public Integer getDuree() {
+        return duree;
+    }
+
+    public void setDuree(Integer duree) {
+        this.duree = duree;
+    }
+
+    public String getMetadonnees() {
+        return metadonnees;
+    }
+
+    public void setMetadonnees(String metadonnees) {
+        this.metadonnees = metadonnees;
+    }
+
+    public List<Document> getDocuments() {
+        return documents;
+    }
+
+    public void setDocuments(List<Document> documents) {
+        this.documents = documents;
+    }
+
 }

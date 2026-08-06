@@ -5,17 +5,26 @@ import java.time.LocalDate;
 import jakarta.validation.constraints.Email;
 
 public class SignupRequest {
-    String nom;
-    String prenom;
+    private String nom;
+    private String prenom;
     @Email(message = "Format d'email invalide")
-    String email;
-    String mdp;
-    String poste;
-    LocalDate dateEntree;
-    LocalDate dateNaissance;
-    String telephone;
-    String adresse;
-    String situationFamiliale;
+    private String email;
+    private String mdp;
+    private String poste;
+    private LocalDate dateEntree;
+    private LocalDate dateNaissance;
+    private String telephone;
+    private String adresse;
+    private String situationFamiliale;
+    private Long serviceId;
+
+    public Long getServiceId() {
+        return serviceId;
+    }
+
+    public void setServiceId(Long serviceId) {
+        this.serviceId = serviceId;
+    }
 
     public String getNom() {
         return nom;

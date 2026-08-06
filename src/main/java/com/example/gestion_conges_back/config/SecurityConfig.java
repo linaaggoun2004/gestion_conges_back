@@ -83,8 +83,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration
-                .setAllowedOrigins(
-                        List.of("http://localhost:3000", "http://localhost:4200", "none", "http://localhost:5173"));
+                .setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:4200", "http://localhost:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
@@ -109,6 +108,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Routes publiques : inscription et connexion
                         .requestMatchers("/api/auth/**").permitAll()
+                        // Route publique : liste des services (necessaire au formulaire de signup)
+                        .requestMatchers("/api/services/**").permitAll()
                         // Tout le reste necessite d'etre authentifie
                         .anyRequest().authenticated())
 

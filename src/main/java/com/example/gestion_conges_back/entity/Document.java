@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 @Table(name = "document")
 public class Document {
     @Id
+    @Column(name = "id_doc")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idDoc;
 

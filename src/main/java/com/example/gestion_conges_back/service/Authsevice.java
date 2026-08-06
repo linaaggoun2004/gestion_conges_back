@@ -2,30 +2,34 @@ package com.example.gestion_conges_back.service;
 
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.server.ui.LoginPageGeneratingWebFilter;
-import org.springframework.stereotype.Service;
+
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.gestion_conges_back.DTO.AuthResponse;
 import com.example.gestion_conges_back.DTO.LoginRequest;
 import com.example.gestion_conges_back.DTO.SignupRequest;
 import com.example.gestion_conges_back.entity.Employe;
 import com.example.gestion_conges_back.entity.RoleEnum;
+import com.example.gestion_conges_back.entity.Service;
 import com.example.gestion_conges_back.filter.JwtUtil;
 import com.example.gestion_conges_back.repository.Employerepository;
+import com.example.gestion_conges_back.repository.Servicerepository;
 
 import lombok.RequiredArgsConstructor;
 
-@Service
+@org.springframework.stereotype.Service
 @RequiredArgsConstructor
 public class Authsevice {
     private final Employerepository employeRep;
     private final PasswordEncoder passwordEncoder;
+    private final Servicerepository serviceRep;
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
@@ -49,6 +53,22 @@ public class Authsevice {
         employe.setMdp(passwordEncoder.encode(request.getMdp()));
         employe.setRole(RoleEnum.EMPLOYE);
 
+        if (request.getServiceId() != null) {
+
+            Optional<Service> serviceOptional = serviceRep.findById(request.getServiceId());
+
+            if (serviceOptional.isPresent()) {
+
+                Service service = serviceOptional.get();
+                employe.setService(service);
+
+            } else {
+
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Service introuvable avec l'id : " + request.getServiceId());
+            }
+        }
         Employe e = employeRep.save(employe);
         String token = jwtUtil.generateToken(e);
         return new AuthResponse(
@@ -64,8 +84,6 @@ public class Authsevice {
     public AuthResponse login(LoginRequest request) {
 
         try {
-            // Delegue a Spring Security la verification email + mot de passe
-            // (via le DaoAuthenticationProvider configure dans SecurityConfig)
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getMdp()));
         } catch (Exception e) {

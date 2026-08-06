@@ -1,8 +1,8 @@
 package com.example.gestion_conges_back.DTO;
 
 public class LoginRequest {
-    String email;
-    String mdp;
+    private String email;
+    private String mdp;
 
     public LoginRequest(String email, String mdp) {
         this.email = email;
