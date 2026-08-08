@@ -13,7 +13,7 @@ public interface Demanderepository extends ListCrudRepository<Demande, Long> {
 
     List<Demande> findByEmployeIdE(Long employeId);
 
-    // List<Demande> findByStatut(StatutEnum statut);
+    Long countByStatut(StatutEnum statut);
 
     // List<Demande> findByEmployeIdEAndStatut(Long employeId, StatutEnum statut);
 }

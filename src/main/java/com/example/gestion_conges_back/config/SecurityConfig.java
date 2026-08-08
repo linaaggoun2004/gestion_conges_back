@@ -1,9 +1,7 @@
 package com.example.gestion_conges_back.config;
 
-import com.example.gestion_conges_back.filter.Jwtfilter;
-import com.example.gestion_conges_back.filter.UserDetailsServiceImpl;
+import java.util.List;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,7 +19,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import com.example.gestion_conges_back.filter.Jwtfilter;
+import com.example.gestion_conges_back.filter.UserDetailsServiceImpl;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Configuration centrale de la securite de l'application.
