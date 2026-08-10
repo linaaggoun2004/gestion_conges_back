@@ -12,16 +12,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.gestion_conges_back.DTO.DemandeArretRequest;
-
+import com.example.gestion_conges_back.DTO.DemandeResponse;
 import com.example.gestion_conges_back.entity.DemandeArretMaladie;
-
 import com.example.gestion_conges_back.entity.Employe;
 import com.example.gestion_conges_back.entity.RoleEnum;
 import com.example.gestion_conges_back.repository.Employerepository;
@@ -49,7 +47,7 @@ public class DemandeArretController {
     }
 
     @PostMapping(value = "/creer", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public DemandeArretMaladie creerArret(@RequestPart("request") String requestJson,
+    public String creerArret(@RequestPart("request") String requestJson,
             @RequestPart("certificat") MultipartFile certificat) throws IOException {
 
         DemandeArretRequest request = objectMapper.readValue(requestJson, DemandeArretRequest.class);
@@ -72,7 +70,7 @@ public class DemandeArretController {
     }
 
     @GetMapping("/{employeId}")
-    public List<DemandeArretMaladie> getArretIdE(@PathVariable Long employeId) {
+    public List<DemandeResponse> getArretIdE(@PathVariable Long employeId) {
 
         Employe employe = employeConnecte();
 
@@ -87,15 +85,15 @@ public class DemandeArretController {
         return demandeArretSer.getAllDemandeArretIdE(employeId);
     }
 
-    @PutMapping("/{id}/annuler")
-    public DemandeArretMaladie annuler(@PathVariable Long id) {
+    @PutMapping("/annuler/{id}")
+    public String annuler(@PathVariable Long id) {
         Employe employe = employeConnecte();
         DemandeArretMaladie demande = demandeArretSer.getDemandeArretParId(id);
 
-        boolean estRhOuManager = employe.getRole() == RoleEnum.RH || employe.getRole() == RoleEnum.MANAGER;
-        boolean estProprietaire = demande.getEmploye().getIdE().equals(employe.getIdE());
+        boolean estProprietaire =
+            demande.getEmploye().getIdE().equals(employe.getIdE());
 
-        if (!estRhOuManager && !estProprietaire) {
+        if (!estProprietaire) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "Vous ne pouvez annuler que vos propres demandes");
         }

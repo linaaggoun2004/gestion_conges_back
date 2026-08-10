@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,15 +17,13 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.gestion_conges_back.DTO.DemandeArretRequest;
-import com.example.gestion_conges_back.DTO.DemandeCongeRequest;
+import com.example.gestion_conges_back.DTO.DemandeResponse;
 import com.example.gestion_conges_back.entity.DemandeArretMaladie;
-import com.example.gestion_conges_back.entity.DemandeConge;
 import com.example.gestion_conges_back.entity.Document;
 import com.example.gestion_conges_back.entity.Employe;
 import com.example.gestion_conges_back.entity.StatutEnum;
 import com.example.gestion_conges_back.entity.TypeDemandeEnum;
 import com.example.gestion_conges_back.repository.DemandeArretMaladierepository;
-import com.example.gestion_conges_back.repository.DemandeCongerepository;
 import com.example.gestion_conges_back.repository.Employerepository;
 
 @Service
@@ -40,7 +39,7 @@ public class DemandeArretMaladieService {
         this.employeRep = employeRep;
     }
 
-    public DemandeArretMaladie creerDemandeArret(DemandeArretRequest request, MultipartFile certificat, Long empId)
+    public String creerDemandeArret(DemandeArretRequest request, MultipartFile certificat, Long empId)
             throws IOException {
 
         Employe emp = this.employeRep.findById(empId)
@@ -66,7 +65,9 @@ public class DemandeArretMaladieService {
         Document doc = enregistrerFichierSurDisque(certificat, demande);
         demande.getDocuments().add(doc);
 
-        return demandeArretRep.save(demande);
+        demandeArretRep.save(demande);
+
+        return "la demande a bien ete creer";
 
     }
 
@@ -91,20 +92,38 @@ public class DemandeArretMaladieService {
 
     }
 
-    public List<DemandeArretMaladie> getAllDemandeArretIdE(Long employeId) {
-        return demandeArretRep.findByEmployeIdE(employeId);
+    public List<DemandeResponse> getAllDemandeArretIdE(Long employeId) {
+        List <DemandeArretMaladie> demandes=demandeArretRep.findByEmployeIdE(employeId);
+        List<DemandeResponse> responses = new ArrayList<>();
+        for (DemandeArretMaladie demande : demandes) {
+             DemandeResponse response= new DemandeResponse(Double.valueOf(demande.getDuree()),
+                demande.getMetadonnees(),
+                demande.getDateCreation().toString(),
+                demande.getDateDebut().toString(),
+                demande.getDateFin().toString(),
+                demande.getIdD(),
+                demande.getStatut(),
+                TypeDemandeEnum.ARRET_MALADIE,
+                "Aucun types"
+            );
+
+        responses.add(response);
     }
+
+    return responses;
+}
 
     public List<DemandeArretMaladie> getAllDemandeArretMal() {
         return demandeArretRep.findAll();
     }
 
-    public DemandeArretMaladie annulerDemandeArretMal(Long id) {
+    public String annulerDemandeArretMal(Long id) {
         DemandeArretMaladie demande = getDemandeArretParId(id);
 
         demande.setStatut(StatutEnum.ANNULEE);
 
-        return demandeArretRep.save(demande);
+        demandeArretRep.save(demande);
+        return "La demande est annulee avec succes";
     }
 
     public DemandeArretMaladie getDemandeArretParId(Long id) {

@@ -88,4 +88,10 @@ public class EmpService {
 
     }
 
+    public IndicateurResponse indicateursManager(Long id){
+        Long totalEmp=empRep.countByManager_IdE(id);
+        Long totalEnAttentes=demandeRep.countByStatut(StatutEnum.EN_ATTENTE_MANAGER);
+        return new IndicateurResponse(totalEmp,totalEnAttentes);
+    }
+
 }

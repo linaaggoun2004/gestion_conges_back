@@ -66,6 +66,8 @@ public class Jwtfilter extends OncePerRequestFilter {
             // Si la route necessite d'etre connecte, elle renverra 401/403
             // plus loin via les regles authorizeHttpRequests (comportement normal).
             // Si la route est publique (permitAll), la requete continue sans probleme.
+            System.out.println("JWT rejeté : " + e.getClass().getSimpleName() + " -> " + e.getMessage());
+
             SecurityContextHolder.clearContext();
         }
 

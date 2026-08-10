@@ -1,7 +1,6 @@
 package com.example.gestion_conges_back.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.gestion_conges_back.DTO.DemandeCongeRequest;
+import com.example.gestion_conges_back.DTO.DemandeResponse;
 import com.example.gestion_conges_back.entity.DemandeConge;
 import com.example.gestion_conges_back.entity.Employe;
 import com.example.gestion_conges_back.entity.RoleEnum;
@@ -42,9 +42,9 @@ public class DemandeCongeController {
     }
 
     @PostMapping("/creer")
-    public DemandeConge creer(@RequestBody DemandeCongeRequest request) {
+    public String creer(@RequestBody DemandeCongeRequest request) {
         Long idE = employeConnecte().getIdE();
-
+ 
         return demandeCongSer.creerDemandeConge(request, idE);
     }
 
@@ -62,7 +62,7 @@ public class DemandeCongeController {
     }
 
     @GetMapping("/{employeId}")
-    public List<DemandeConge> getCongeIdE(@PathVariable Long employeId) {
+    public List<DemandeResponse> getCongeIdE(@PathVariable Long employeId) {
 
         Employe employe = employeConnecte();
 
@@ -77,15 +77,15 @@ public class DemandeCongeController {
         return demandeCongSer.getAllDemandeCongeIdE(employeId);
     }
 
-    @PutMapping("/{id}/annuler")
-    public DemandeConge annuler(@PathVariable Long id) {
+    @PutMapping("/annuler/{id}")
+    public String annuler(@PathVariable Long id) {
         Employe employe = employeConnecte();
         DemandeConge demande = demandeCongSer.getDemandeParId(id);
 
-        boolean estRhOuManager = employe.getRole() == RoleEnum.RH || employe.getRole() == RoleEnum.MANAGER;
+        
         boolean estProprietaire = demande.getEmploye().getIdE().equals(employe.getIdE());
 
-        if (!estRhOuManager && !estProprietaire) {
+        if (!estProprietaire) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "Vous ne pouvez annuler que vos propres demandes");
         }

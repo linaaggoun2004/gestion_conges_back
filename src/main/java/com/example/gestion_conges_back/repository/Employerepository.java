@@ -16,4 +16,5 @@ public interface Employerepository extends ListCrudRepository<Employe, Long> {
     boolean existsByEmail(String email);
 
     boolean existsByRole(RoleEnum role);
+    Long countByManager_IdE(Long id );
 }

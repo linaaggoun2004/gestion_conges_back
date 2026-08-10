@@ -3,6 +3,7 @@ package com.example.gestion_conges_back.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.gestion_conges_back.DTO.DemandeCongeRequest;
+import com.example.gestion_conges_back.DTO.DemandeResponse;
 import com.example.gestion_conges_back.entity.DemandeConge;
 import com.example.gestion_conges_back.entity.Employe;
 import com.example.gestion_conges_back.entity.StatutEnum;
@@ -27,7 +29,7 @@ public class DemandeCongeService {
         this.employeRep = employeRep;
     }
 
-    public DemandeConge creerDemandeConge(DemandeCongeRequest request, Long empId) {
+    public String creerDemandeConge(DemandeCongeRequest request, Long empId) {
 
         Employe emp = this.employeRep.findById(empId)
                 .orElseThrow(() -> new RuntimeException("Employé introuvable"));
@@ -47,25 +49,46 @@ public class DemandeCongeService {
                 LocalDate.parse(request.getDateFin())) + 1;
         demande.setNbrJours(nbr_jours);
 
-        return demandeCongRep.save(demande);
+        demandeCongRep.save(demande);
+        return "la demande a bien ete creer";
 
     }
 
-    public List<DemandeConge> getAllDemandeCongeIdE(Long employeId) {
-        return demandeCongRep.findByEmployeIdE(employeId);
+    public List<DemandeResponse> getAllDemandeCongeIdE(Long employeId) {
+
+
+        List<DemandeConge> demandes=demandeCongRep.findByEmployeIdE(employeId);
+        List<DemandeResponse> responses = new ArrayList<>();
+
+        for ( DemandeConge demande : demandes){
+            DemandeResponse response= new DemandeResponse(demande.getNbrJours(),
+                demande.getCommentaire(),
+                demande.getDateCreation().toString(),
+                demande.getDateDebut().toString(),
+                demande.getDateFin().toString(),
+                demande.getIdD(),
+                demande.getStatut(),
+                TypeDemandeEnum.CONGE,
+                demande.getTypeConge()
+            );
+            responses.add(response);
+
+        }
+        return responses;
     }
 
     public List<DemandeConge> getAllDemandeConge() {
         return demandeCongRep.findAll();
     }
 
-    public DemandeConge annulerDemandeConge(Long id) {
+    public String annulerDemandeConge(Long id) {
         DemandeConge demande = demandeCongRep.findById(id)
                 .orElseThrow(() -> new RuntimeException("Demande introuvable"));
 
         demande.setStatut(StatutEnum.ANNULEE);
 
-        return demandeCongRep.save(demande);
+        demandeCongRep.save(demande);
+        return "La demande est annulee avec succes";
     }
 
     public DemandeConge getDemandeParId(Long id) {

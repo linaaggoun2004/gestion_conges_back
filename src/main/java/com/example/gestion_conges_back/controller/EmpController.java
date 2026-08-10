@@ -53,6 +53,11 @@ public class EmpController {
         return empServ.indicateurs();
     }
 
+    @GetMapping("/indiMan/{id}")
+    public IndicateurResponse getTotalManager(@PathVariable Long id){
+        return empServ.indicateursManager(id);
+    }
+
 
         
     
