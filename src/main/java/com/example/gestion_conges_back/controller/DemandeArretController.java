@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.gestion_conges_back.DTO.DemandeArretRequest;
+import com.example.gestion_conges_back.DTO.DemandeManResponse;
 import com.example.gestion_conges_back.DTO.DemandeResponse;
 import com.example.gestion_conges_back.entity.DemandeArretMaladie;
 import com.example.gestion_conges_back.entity.Employe;
@@ -98,5 +99,17 @@ public class DemandeArretController {
                     "Vous ne pouvez annuler que vos propres demandes");
         }
         return demandeArretSer.annulerDemandeArretMal(id);
+    }
+
+    @GetMapping("/manager/{managerId}")
+    public List<DemandeManResponse> getCongeParManager(@PathVariable Long managerId) {
+        Employe employe = employeConnecte();
+
+        boolean estManager =employe.getRole() == RoleEnum.MANAGER;
+        if (!estManager) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "pour manager seulment");
+        }
+        return demandeArretSer.getDemandesParManagerArret(managerId);
     }
 }

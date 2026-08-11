@@ -1,5 +1,6 @@
 package com.example.gestion_conges_back.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.repository.ListCrudRepository;
@@ -17,4 +18,6 @@ public interface Employerepository extends ListCrudRepository<Employe, Long> {
 
     boolean existsByRole(RoleEnum role);
     Long countByManager_IdE(Long id );
+    Optional<Employe> findByIdE(Long idE);
+    List<Employe> findByManager_IdE(Long id);
 }

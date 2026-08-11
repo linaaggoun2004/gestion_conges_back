@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.gestion_conges_back.DTO.DemandeArretRequest;
+import com.example.gestion_conges_back.DTO.DemandeManResponse;
 import com.example.gestion_conges_back.DTO.DemandeResponse;
 import com.example.gestion_conges_back.entity.DemandeArretMaladie;
 import com.example.gestion_conges_back.entity.Document;
@@ -93,7 +94,7 @@ public class DemandeArretMaladieService {
     }
 
     public List<DemandeResponse> getAllDemandeArretIdE(Long employeId) {
-        List <DemandeArretMaladie> demandes=demandeArretRep.findByEmployeIdE(employeId);
+        List <DemandeArretMaladie> demandes=demandeArretRep.findByEmploye_IdE(employeId);
         List<DemandeResponse> responses = new ArrayList<>();
         for (DemandeArretMaladie demande : demandes) {
              DemandeResponse response= new DemandeResponse(Double.valueOf(demande.getDuree()),
@@ -130,6 +131,37 @@ public class DemandeArretMaladieService {
         return demandeArretRep.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Demande introuvable avec l'id : " + id));
+    }
+
+    public List<DemandeManResponse> getDemandesParManagerArret(Long idManager){
+
+        List<Employe> emps=employeRep.findByManager_IdE(idManager);
+
+        List<DemandeManResponse> responses=new ArrayList<>();
+        List<DemandeArretMaladie> demandes=new ArrayList<>();
+
+        for (Employe e:emps){
+            List<DemandeArretMaladie> d=demandeArretRep.findByEmploye_IdE(e.getIdE());
+            demandes.addAll(d);
+        }
+        for ( DemandeArretMaladie demande : demandes){
+            String nomComplet=demande.getEmploye().getNom()+ " "+demande.getEmploye().getPrenom();
+            DemandeManResponse response= new DemandeManResponse(
+                demande.getIdD(),
+                nomComplet,
+                TypeDemandeEnum.ARRET_MALADIE,
+                "Aucun type",
+                demande.getDateDebut().toString(),
+                demande.getDateFin().toString(),
+                String.valueOf(demande.getDuree()),
+                demande.getMetadonnees(),
+                demande.getStatut(),
+                demande.getDateCreation().toString(),
+                demande.getEmploye().getPoste()
+            );
+            responses.add(response);
+        }
+        return responses;
     }
 
 }

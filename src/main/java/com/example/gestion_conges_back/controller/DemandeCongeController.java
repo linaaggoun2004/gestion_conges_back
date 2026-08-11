@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.gestion_conges_back.DTO.DemandeCongeRequest;
+import com.example.gestion_conges_back.DTO.DemandeManResponse;
 import com.example.gestion_conges_back.DTO.DemandeResponse;
 import com.example.gestion_conges_back.entity.DemandeConge;
 import com.example.gestion_conges_back.entity.Employe;
@@ -90,5 +91,17 @@ public class DemandeCongeController {
                     "Vous ne pouvez annuler que vos propres demandes");
         }
         return demandeCongSer.annulerDemandeConge(id);
+    }
+
+    @GetMapping("/manager/{managerId}")
+    public List<DemandeManResponse> getCongeParManager(@PathVariable Long managerId) {
+        Employe employe = employeConnecte();
+
+        boolean estManager =employe.getRole() == RoleEnum.MANAGER;
+        if (!estManager) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "pour manager seulment");
+        }
+        return demandeCongSer.getDemandesParManagerCong(managerId);
     }
 }
