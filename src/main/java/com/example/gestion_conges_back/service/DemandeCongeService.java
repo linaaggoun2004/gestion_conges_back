@@ -78,10 +78,6 @@ public class DemandeCongeService {
         return responses;
     }
 
-    public List<DemandeConge> getAllDemandeConge() {
-        return demandeCongRep.findAll();
-    }
-
     public String annulerDemandeConge(Long id) {
         DemandeConge demande = demandeCongRep.findById(id)
                 .orElseThrow(() -> new RuntimeException("Demande introuvable"));
@@ -122,6 +118,30 @@ public class DemandeCongeService {
                 String.valueOf(demande.getNbrJours()),
                 demande.getCommentaire(),
                 demande.getStatut(),
+                demande.getDateCreation().toString(),
+                demande.getEmploye().getPoste()
+            );
+            responses.add(response);
+        }
+        return responses;
+    }
+
+    public List<DemandeManResponse> getAllDemandeConge() {
+        List<DemandeConge> demandes=demandeCongRep.findByStatut(StatutEnum.VALIDEE_MANAGER);
+        List<DemandeManResponse> responses = new ArrayList<>();
+
+        for ( DemandeConge demande : demandes){
+            String nomComplet=demande.getEmploye().getNom()+ " "+demande.getEmploye().getPrenom();
+            DemandeManResponse response= new DemandeManResponse(
+                demande.getIdD(),
+                nomComplet,
+                TypeDemandeEnum.CONGE,
+                demande.getTypeConge(),
+                demande.getDateDebut().toString(),
+                demande.getDateFin().toString(),
+                String.valueOf(demande.getNbrJours()),
+                demande.getCommentaire(),
+                StatutEnum.EN_ATTENTE_RH,
                 demande.getDateCreation().toString(),
                 demande.getEmploye().getPoste()
             );

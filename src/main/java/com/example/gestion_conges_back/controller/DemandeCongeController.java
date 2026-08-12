@@ -50,11 +50,11 @@ public class DemandeCongeController {
     }
 
     @GetMapping("/all")
-    public List<DemandeConge> getAll() {
+    public List<DemandeManResponse> getAll() {
 
         Employe employe = employeConnecte();
 
-        if (employe.getRole() != RoleEnum.RH && employe.getRole() != RoleEnum.MANAGER) {
+        if (employe.getRole() != RoleEnum.RH) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "Seuls le RH et les managers peuvent consulter toutes les demandes");
         }

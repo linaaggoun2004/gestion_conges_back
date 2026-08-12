@@ -58,16 +58,16 @@ public class DemandeArretController {
     }
 
     @GetMapping("/all")
-    public List<DemandeArretMaladie> getAllArret() {
+    public List<DemandeManResponse> getAllArret() {
 
         Employe employe = employeConnecte();
 
-        if (employe.getRole() != RoleEnum.RH && employe.getRole() != RoleEnum.MANAGER) {
+        if (employe.getRole() != RoleEnum.RH) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "Seuls le RH et les managers peuvent consulter toutes les demandes");
+                    "Seuls le rh peut consulter toutes les demandes");
         }
 
-        return demandeArretSer.getAllDemandeArretMal();
+        return demandeArretSer.getAllDemandeArret();
     }
 
     @GetMapping("/{employeId}")

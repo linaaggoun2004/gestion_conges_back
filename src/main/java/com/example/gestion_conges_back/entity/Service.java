@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -16,6 +18,10 @@ public class Service {
     private String nom;
     private String description;
 
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private Employe manager;
+
     
     public Service(Long idS, String nom, String description) {
         this.idS = idS;
@@ -25,6 +31,13 @@ public class Service {
 
     
     public Service() {
+    }
+
+    public Service(String description, Long idS, Employe manager, String nom) {
+        this.description = description;
+        this.idS = idS;
+        this.manager = manager;
+        this.nom = nom;
     }
 
 
@@ -45,6 +58,14 @@ public class Service {
     }
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Employe getManager() {
+        return manager;
+    }
+
+    public void setManager(Employe manager) {
+        this.manager = manager;
     }
 
     

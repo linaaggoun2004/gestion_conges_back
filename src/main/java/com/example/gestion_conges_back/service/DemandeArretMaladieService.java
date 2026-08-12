@@ -114,9 +114,6 @@ public class DemandeArretMaladieService {
     return responses;
 }
 
-    public List<DemandeArretMaladie> getAllDemandeArretMal() {
-        return demandeArretRep.findAll();
-    }
 
     public String annulerDemandeArretMal(Long id) {
         DemandeArretMaladie demande = getDemandeArretParId(id);
@@ -164,4 +161,28 @@ public class DemandeArretMaladieService {
         return responses;
     }
 
+    public List<DemandeManResponse> getAllDemandeArret() {
+        List <DemandeArretMaladie> demandes=demandeArretRep.findByStatut(StatutEnum.VALIDEE_MANAGER);
+        List<DemandeManResponse> responses = new ArrayList<>();
+        for (DemandeArretMaladie demande : demandes) {
+            String nomComplet=demande.getEmploye().getNom()+ " "+demande.getEmploye().getPrenom();
+            DemandeManResponse response= new DemandeManResponse(
+                demande.getIdD(),
+                nomComplet,
+                TypeDemandeEnum.ARRET_MALADIE,
+                "Aucun type",
+                demande.getDateDebut().toString(),
+                demande.getDateFin().toString(),
+                String.valueOf(demande.getDuree()),
+                demande.getMetadonnees(),
+                StatutEnum.EN_ATTENTE_RH,
+                demande.getDateCreation().toString(),
+                demande.getEmploye().getPoste()
+            );
+
+        responses.add(response);
+    }
+
+    return responses;
+    }
 }
