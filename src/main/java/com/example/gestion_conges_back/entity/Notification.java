@@ -35,4 +35,67 @@ public class Notification {
     @ManyToOne
     @JoinColumn(name = "validation_id")
     private Validation validation;
+
+    public Notification() {
+    }
+
+    public Notification(Long idN, String contenu, LocalDateTime dateEnvoi, Boolean lu, Employe employe,
+            Validation validation) {
+        this.idN = idN;
+        this.contenu = contenu;
+        this.dateEnvoi = dateEnvoi;
+        this.lu = lu;
+        this.employe = employe;
+        this.validation = validation;
+    }
+
+    public Long getIdN() {
+        return idN;
+    }
+
+    public void setIdN(Long idN) {
+        this.idN = idN;
+    }
+
+    public String getContenu() {
+        return contenu;
+    }
+
+    public void setContenu(String contenu) {
+        this.contenu = contenu;
+    }
+
+    public LocalDateTime getDateEnvoi() {
+        return dateEnvoi;
+    }
+
+    public void setDateEnvoi(LocalDateTime dateEnvoi) {
+        this.dateEnvoi = dateEnvoi;
+    }
+
+    public Boolean getLu() {
+        return lu;
+    }
+
+    public void setLu(Boolean lu) {
+        this.lu = lu;
+    }
+
+    public Employe getEmploye() {
+        return employe;
+    }
+
+    public void setEmploye(Employe employe) {
+        this.employe = employe;
+    }
+
+    public Validation getValidation() {
+        return validation;
+    }
+
+    public void setValidation(Validation validation) {
+        this.validation = validation;
+    }
+
+    
 }

@@ -21,4 +21,6 @@ public interface Employerepository extends ListCrudRepository<Employe, Long> {
     Optional<Employe> findByIdE(Long idE);
     List<Employe> findByManager_IdE(Long id);
     long countByServiceIdS(Long serviceId);
+
+    Optional<Employe> findFirstByRole(RoleEnum role);
 }

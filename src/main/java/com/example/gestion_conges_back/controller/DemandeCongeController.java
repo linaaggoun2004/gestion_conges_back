@@ -104,4 +104,38 @@ public class DemandeCongeController {
         }
         return demandeCongSer.getDemandesParManagerCong(managerId);
     }
+
+
+    //workflow
+    @PutMapping("/valider-manager/{id}")
+    public String validerParManager(@PathVariable Long id) {
+        if (employeConnecte().getRole() != RoleEnum.MANAGER) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Seul un manager peut valider une demande");
+        }
+        return demandeCongSer.validerParManager(id);
+    }
+
+    @PutMapping("/refuser-manager/{id}")
+    public String refuserParManager(@PathVariable Long id) {
+        if (employeConnecte().getRole() != RoleEnum.MANAGER) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Seul un manager peut refuser une demande");
+        }
+        return demandeCongSer.refuserParManager(id);
+    }
+
+    @PutMapping("/valider-rh/{id}")
+    public String validerParRH(@PathVariable Long id) {
+        if (employeConnecte().getRole() != RoleEnum.RH) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Seul le RH peut valider définitivement une demande");
+        }
+        return demandeCongSer.validerParRH(id);
+    }
+
+    @PutMapping("/refuser-rh/{id}")
+    public String refuserParRH(@PathVariable Long id) {
+        if (employeConnecte().getRole() != RoleEnum.RH) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Seul le RH peut refuser une demande");
+        }
+        return demandeCongSer.refuserParRH(id);
+    }
 }

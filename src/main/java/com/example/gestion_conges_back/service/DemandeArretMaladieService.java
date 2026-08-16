@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -30,15 +31,23 @@ import com.example.gestion_conges_back.repository.Employerepository;
 @Service
 public class DemandeArretMaladieService {
 
+    public DemandeArretMaladieService(DemandeArretMaladierepository demandeArretRep, Employerepository employeRep,
+            WorkflowService workflowService) {
+        this.demandeArretRep = demandeArretRep;
+        this.employeRep = employeRep;
+        this.workflowService = workflowService;
+        this.notificationService = null;
+    }
+
     private final DemandeArretMaladierepository demandeArretRep;
     private final Employerepository employeRep;
 
+    private final WorkflowService workflowService;
+
+    private final NotificationService notificationService;
     private static final String DOSSIER_UPLOAD = "C:/Users/linaa/Desktop/stage2emeProjet/gestion-conges-back/uploads/certificats/";
 
-    public DemandeArretMaladieService(DemandeArretMaladierepository demandeArretRep, Employerepository employeRep) {
-        this.demandeArretRep = demandeArretRep;
-        this.employeRep = employeRep;
-    }
+   
 
     public String creerDemandeArret(DemandeArretRequest request, MultipartFile certificat, Long empId)
             throws IOException {
@@ -67,6 +76,11 @@ public class DemandeArretMaladieService {
         demande.getDocuments().add(doc);
 
         demandeArretRep.save(demande);
+
+        /*Employe manager = workflowService.trouverManagerDe(demande.getEmploye());
+        notificationService.creerNotification(manager,
+        demande.getEmploye().getPrenom() + " " + demande.getEmploye().getNom()
+                + " a soumis une nouvelle demande à valider.");*/
 
         return "la demande a bien ete creer";
 
@@ -184,5 +198,38 @@ public class DemandeArretMaladieService {
     }
 
     return responses;
+    }
+
+
+
+    //workflow
+    public String validerParManager(Long id) {
+        DemandeArretMaladie demande = getDemandeArretParId(id);
+        Employe manager = (Employe) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        workflowService.validerParManager(demande, manager);
+        demandeArretRep.save(demande);
+        return "demande validee";
+    }
+
+    public String refuserParManager(Long id) {
+        DemandeArretMaladie demande = getDemandeArretParId(id);
+        Employe manager = (Employe) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        workflowService.refuserParManager(demande, manager);
+        demandeArretRep.save(demande);
+        return "demande validee";
+    }
+
+    public String validerParRH(Long id) {
+        DemandeArretMaladie demande = getDemandeArretParId(id);
+        workflowService.validerParRH(demande);
+        demandeArretRep.save(demande);
+        return "demande validee";
+    }
+
+    public String refuserParRH(Long id) {
+        DemandeArretMaladie demande = getDemandeArretParId(id);
+        workflowService.refuserParRH(demande);
+        demandeArretRep.save(demande);
+        return "demande validee";
     }
 }

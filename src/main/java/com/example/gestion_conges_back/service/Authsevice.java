@@ -7,9 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.gestion_conges_back.DTO.AuthResponse;
@@ -61,6 +59,15 @@ public class Authsevice {
 
                 Service service = serviceOptional.get();
                 employe.setService(service);
+                Employe manager = service.getManager();
+                if (manager == null) {
+                    throw new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "Ce service n'a pas encore de manager."
+                    );
+                }
+
+                employe.setManager(manager);
 
             } else {
 

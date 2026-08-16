@@ -205,6 +205,41 @@ public class EmpService {
         return new Soldedto(solde.getTotalJours(),solde.getJoursUtilises(),solde.getJoursRestantes());
     }
 
+    @Transactional
+    public SoldeConge utiliserJours(Long employeId, Double jours) {
+
+        int annee = LocalDate.now().getYear();
+
+        Employe employe = empRep.findById(employeId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Employé introuvable"
+                ));
+
+        SoldeConge solde = soldeRep.findByEmployeIdEAndAnnee(employeId, annee)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Solde de congé introuvable"
+                ));
+
+        double nouveauJoursUtilises = solde.getJoursUtilises() + jours;
+
+        if (nouveauJoursUtilises > solde.getTotalJours()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Le solde de congé est insuffisant"
+            );
+        }
+
+        solde.setJoursUtilises(nouveauJoursUtilises);
+
+        solde.setJoursRestantes(
+                solde.getTotalJours() - solde.getJoursUtilises()
+        );
+
+        return soldeRep.save(solde);
+}
+
 
 
 

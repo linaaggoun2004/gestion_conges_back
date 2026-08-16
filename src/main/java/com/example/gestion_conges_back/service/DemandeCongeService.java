@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,11 +26,22 @@ public class DemandeCongeService {
     private final DemandeCongerepository demandeCongRep;
     private final Employerepository employeRep;
 
-    public DemandeCongeService(DemandeCongerepository demandeCongRep, Employerepository employeRep) {
+    private final WorkflowService workflowSer;
+    private final  NotificationService notificationService;
+
+    public DemandeCongeService(
+            DemandeCongerepository demandeCongRep,
+            Employerepository employeRep,
+            WorkflowService workflowSer,
+            NotificationService notificationService) {
+
         this.demandeCongRep = demandeCongRep;
         this.employeRep = employeRep;
+        this.workflowSer = workflowSer;
+        this.notificationService = notificationService;
     }
 
+    
     public String creerDemandeConge(DemandeCongeRequest request, Long empId) {
 
         Employe emp = this.employeRep.findById(empId)
@@ -51,6 +63,12 @@ public class DemandeCongeService {
         demande.setNbrJours(nbr_jours);
 
         demandeCongRep.save(demande);
+
+        // Injecter WorkflowService et NotificationService dans le constructeur si pas déjà fait
+        Employe manager = workflowSer.trouverManagerDe(demande.getEmploye());
+        notificationService.creerNotification(manager,
+        demande.getEmploye().getPrenom() + " " + demande.getEmploye().getNom()
+                + " a soumis une nouvelle demande à valider.");
         return "la demande a bien ete creer";
 
     }
@@ -148,6 +166,40 @@ public class DemandeCongeService {
             responses.add(response);
         }
         return responses;
+    }
+
+
+
+
+    //workflow
+
+    public String validerParManager(Long id) {
+        DemandeConge demande = getDemandeParId(id);
+        Employe manager = (Employe) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        workflowSer.validerParManager(demande, manager);
+        demandeCongRep.save(demande);
+        return "demande validee";
+    }
+
+    public String refuserParManager(Long id) {
+        DemandeConge demande = getDemandeParId(id);
+        Employe manager = (Employe) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        workflowSer.refuserParManager(demande, manager);
+        demandeCongRep.save(demande);
+        return "demande validee";
+    }
+    public String validerParRH(Long id) {
+        DemandeConge demande = getDemandeParId(id);
+        workflowSer.validerParRH(demande);
+        demandeCongRep.save(demande);
+        return "demande validee";
+    }
+
+    public String refuserParRH(Long id) {
+        DemandeConge demande = getDemandeParId(id);
+        workflowSer.refuserParRH(demande);
+        demandeCongRep.save(demande);
+        return "demande validee";
     }
 
 }

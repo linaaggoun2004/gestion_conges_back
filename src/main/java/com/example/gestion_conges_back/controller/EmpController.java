@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.gestion_conges_back.DTO.ChangerRoleRequest;
 import com.example.gestion_conges_back.DTO.EmployeListDto;
+import com.example.gestion_conges_back.DTO.EquipeMembreDto;
 import com.example.gestion_conges_back.DTO.IndicateurResponse;
 import com.example.gestion_conges_back.DTO.ManagerRequest;
 import com.example.gestion_conges_back.DTO.ProfilResponse;
@@ -28,6 +29,7 @@ import com.example.gestion_conges_back.entity.Employe;
 import com.example.gestion_conges_back.entity.RoleEnum;
 import com.example.gestion_conges_back.entity.SoldeConge;
 import com.example.gestion_conges_back.service.EmpService;
+import com.example.gestion_conges_back.service.EquipeService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,6 +41,7 @@ public class EmpController {
 
     private final EmpService empServ;
 
+    private final EquipeService equipeService;
     private Employe employeConnecte() {
         return (Employe) SecurityContextHolder.getContext()
                 .getAuthentication()
@@ -113,6 +116,14 @@ public class EmpController {
         return empServ.getSolde(connecte.getIdE());
     }
 
+    @GetMapping("/equipe")
+public List<EquipeMembreDto> getMonEquipe() {
+    Employe connecte = employeConnecte();
+    if (connecte.getRole() != RoleEnum.MANAGER) {
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Seul un manager peut consulter son équipe");
+    }
+    return equipeService.getEquipeDuManager(connecte.getIdE());
+}
 
 
 
